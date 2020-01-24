@@ -1,102 +1,82 @@
 package com.example.practicaunonavigation;
 
-import android.content.Intent;
+
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Switch;
+import android.widget.EditText;
 
-public class MainActivity extends AppCompatActivity {
+import com.example.practicaunonavigation.rest.adapter.MarketAdapter;
+import com.example.practicaunonavigation.rest.model.Post;
 
-    Button btnLogin,btnGuardar,btnBuscar,btnPasarParametro;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+public class MainActivity extends AppCompatActivity implements View.OnClickListener{
+
+    //Views
+    Button ButtonPost;
+    EditText EditTextTittle, EditTextDescription;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        InitViews();
+        ButtonPost.setOnClickListener(this);
+    }
 
+    //Metodo para iniciar las views
 
-        btnLogin=(Button)findViewById(R.id.btnLogin);
-        btnGuardar=(Button) findViewById(R.id.btnGuardar);
-        btnBuscar=(Button) findViewById(R.id.btnBuscar);
-        btnPasarParametro=(Button) findViewById(R.id.btnPasarParametro);
+    private void InitViews(){
+        ButtonPost=findViewById(R.id.ButtonPost);
+        EditTextTittle=findViewById(R.id.EditTextTittle);
+        EditTextDescription=findViewById(R.id.EditTextDescription);
+    }
 
-        btnLogin.setOnClickListener(new View.OnClickListener() {
+    private void PostPosts(){
+        MarketAdapter adapter = new MarketAdapter();
+        Call<Post> call = adapter.InsertPost(
+                new Post(
+                        EditTextTittle.getText().toString(),
+                        EditTextDescription.getText().toString(),
+                        "https://manabinoticias.com/wp-content/uploads/2019/08/mia-kalifa.jpg"
+                )
+        );
+        call.enqueue(new Callback<Post>() {
             @Override
-            public void onClick(View v) {
-
-                Intent intent =new Intent(MainActivity.this, LoginActivity.class);
-                startActivity(intent);
+            public void onResponse(Call<Post> call, Response<Post> response) {
+                Log.e("response", response.body().toString());
+                //GetPosts();
             }
-        });
 
-        btnGuardar.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onFailure(Call<Post> call, Throwable t) {
 
-                Intent intent =new Intent(MainActivity.this, GuardarActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        btnBuscar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                Intent intent =new Intent(MainActivity.this, BuscarActivity.class);
-                startActivity(intent);
-            }
-        });
-
-
-        btnPasarParametro.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                Intent intent =new Intent(MainActivity.this, PasarParametroActivity.class);
-                startActivity(intent);
             }
         });
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu){
-
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu, menu);
-
-        return true;
-
+    public void onClick(View view){
+        switch (view.getId()){
+            case R.id.ButtonPost:
+                PostPosts();
+                break;
+        }
     }
 
-    public boolean onOptionsItemSelected(MenuItem item){
-
-        Intent intent;
-
-        switch (item.getItemId()){
-            case R.id.opcionLogin:
-                intent = new Intent (MainActivity.this, LoginActivity.class);
-                        startActivity(intent);
-                break;
-
-        }
-
-        switch (item.getItemId()){
-            case R.id.opcionRegistrar:
-                intent = new Intent (MainActivity.this, PasarParametroActivity.class);
-                startActivity(intent);
-                break;
 
 
-        }
 
 
-        return true;
-    }
+
+
 }
 
 
